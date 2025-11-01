@@ -23,8 +23,7 @@ Window::Window(int width, int height, const std::string& title)
         throw std::runtime_error("Failed to initialize GLAD");
     }
 
-    // Set the one static callback we need.
-    // We can use the Renderer's static function here.
+    
     glfwSetFramebufferSizeCallback(m_window, Renderer::framebuffer_size_callback);
 }
 

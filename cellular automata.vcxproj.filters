@@ -134,12 +134,21 @@
     <ClInclude Include="Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="orb.frag">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="orb.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="basic.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="basic.frag">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

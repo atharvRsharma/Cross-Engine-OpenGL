@@ -1,15 +1,20 @@
 #pragma once
 
 #include "Components.h"
-#include "InputManager.h" // For the InputState
+#include "InputManager.h" 
 
-// This class contains all logic for updating the entity's state
+
+
 class Physics
 {
     bool m_gravityEnabled = false;
-    const float gravity = -9.8f;
+   
+    void solveSpherePlaneCollision(GlowingOrb& orb, Plane& plane);
+    void solveCubePlaneCollision(Cube& cube, Plane& plane);
+
+
 public:
-    void update(GlowingOrb& orb, const InputState& input, float deltaTime);
+    void update(GlowingOrb& orb, Plane& plane, Cube* cube, const InputState& input, float deltaTime);
     
 
 };

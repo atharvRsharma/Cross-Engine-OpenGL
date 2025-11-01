@@ -1,16 +1,10 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include "FileParser.h"
-#include <string>
-#include "Components.h"
+#include "Shader.h"
+#include "Mesh.h"
 #include "Camera.h"
-#include <glm/gtc/type_ptr.hpp>
-#include <iostream>
-#include <vector>
-#include <cstddef>
-#include "Shader.h" 
+#include "Window.h"
+#include <glm/glm.hpp>
 
 class Renderer
 {
@@ -18,29 +12,43 @@ public:
     Renderer();
     ~Renderer();
 
-    // MODIFIED: Now takes shader paths
-    void init(const std::string& modelPath, const std::string& vertexPath, const std::string& fragmentPath);
+    // Call this once at the start of the render loop
+    void beginFrame(const Camera& camera, int screenWidth, int screenHeight);
 
-    // Draw call (signature stays the same)
-    void draw(const GlowingOrb& orb, const Camera& camera, int screenWidth, int screenHeight);
+    // THIS IS THE NEW GENERIC DRAW FUNCTION
+    // We pass it the assets, the transform, and a C++ lambda
+    // that will set the unique uniforms.
+    template<typename Func>
+    void draw(Mesh* mesh, Shader* shader, const glm::mat4& model, Func setUniforms)
+    {
+        if (!mesh || !shader) return;
 
-    // Frees OpenGL resources
-    void cleanup();
+        shader->use();
 
-    // Callback for window resizing
+        // 1. Set global uniforms (same for everything)
+        shader->setMat4("projection", m_projection);
+        shader->setMat4("view", m_view);
+        shader->setVec3("viewPos", m_viewPos); // Send viewPos, shader can just ignore it
+
+        // 2. Set the model matrix (transform)
+        shader->setMat4("model", model);
+
+        // 3. Call the lambda to set specific uniforms
+        setUniforms(*shader);
+
+        // 4. Draw the mesh
+        mesh->bind();
+        glDrawArrays(GL_TRIANGLES, 0, mesh->getVertexCount());
+    }
+
+    // Call this at the end of the render loop
+    void endFrame();
+
     static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 private:
-    // REMOVED: Shader helper functions (they are in Shader.cpp)
-    // unsigned int compileShader(...);
-    // unsigned int createShaderProgram(...);
-
-    // OpenGL handles
-    // MODIFIED: We now own a Shader object
-    std::unique_ptr<Shader> m_shader;
-    // unsigned int m_shaderProgram = 0; <-- REMOVED
-
-    unsigned int m_vao = 0;
-    unsigned int m_vbo = 0;
-    unsigned int m_vertexCount = 0;
+    // Stored matrices for the frame
+    glm::mat4 m_projection;
+    glm::mat4 m_view;
+    glm::vec3 m_viewPos; // Stored camera position
 };
