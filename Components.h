@@ -19,14 +19,8 @@ enum class EquilibriumState {
 
 struct Collider {
     ShapeType type;
-
-    
     float radius;
-
-    
     glm::vec3 normal;
-
-    
     glm::vec3 baseHalfExtents = glm::vec3(0.5f);
 };
 
@@ -40,6 +34,7 @@ struct GlowingOrb {
     glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);
     float energy = 0.5f;
     std::string state = "active";
+    bool isGravityOn = false;
 
     float mass = 1.0f;           
     float inverseMass = 1.0f / mass; 
@@ -59,8 +54,9 @@ struct GlowingOrb {
     }
 };
 
+
 struct Plane  {
-    glm::vec3 position = glm::vec3(0.0f);
+    glm::vec3 position = glm::vec3(0.0f, -1.0f, 0.0f);
     glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
     Collider collider;
 

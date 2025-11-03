@@ -3,11 +3,20 @@
 #include <algorithm> 
 
 
+Physics::Physics() : m_gravityEnabled(false) {}
+
 
 void Physics::update(GlowingOrb& orb, Plane& plane, Cube* cube, const InputState& input, float deltaTime)
 {
     if (input.toggleGravity) {
         m_gravityEnabled = !m_gravityEnabled;
+
+        if (!m_gravityEnabled) {
+            orb.velocity = glm::vec3(0.0f);
+            if (cube != nullptr) {
+                cube->velocity = glm::vec3(0.0f);
+            }
+        }
     }
 
     if (input.shouldInteract) {
@@ -24,7 +33,6 @@ void Physics::update(GlowingOrb& orb, Plane& plane, Cube* cube, const InputState
         cube->forceAccumulator = glm::vec3(0.0f);
     }
 
-
     if (m_gravityEnabled) {
         const float gravity = -9.8f;
 
@@ -37,36 +45,22 @@ void Physics::update(GlowingOrb& orb, Plane& plane, Cube* cube, const InputState
             cube->forceAccumulator += cubeGravityForce;
         }
     }
-        
-       
-    
 
     if (orb.eq_state == EquilibriumState::AWAKE) {
-        // a = F * (1/m)
         glm::vec3 acceleration = orb.forceAccumulator * orb.inverseMass;
-        // v_new = v_old + a * dt
         orb.velocity += acceleration * deltaTime;
-        // p_new = p_old + v * dt
         orb.position += orb.velocity * deltaTime;
     }
     if (cube != nullptr && cube->state == EquilibriumState::AWAKE) {
-        // a = F * (1/m)
         glm::vec3 acceleration = cube->forceAccumulator * cube->inverseMass;
-        // v_new = v_old + a * dt
         cube->velocity += acceleration * deltaTime;
-        // p_new = p_old + v * dt
         cube->position += cube->velocity * deltaTime;
     }
-    
-
 
     solveSpherePlaneCollision(orb, plane);
     if (cube != nullptr) {
         solveCubePlaneCollision(*cube, plane);
     }
-
-    
-
 
 }
 
@@ -77,7 +71,6 @@ void Physics::solveSpherePlaneCollision(GlowingOrb& orb, Plane& plane)
     float planeDist = glm::dot(plane.position, normal);
     float orbDist = glm::dot(orb.position, normal);
     float penetration = (orbDist - radius) - planeDist;
-
 
     if (penetration < 0.0f)
     {
@@ -90,12 +83,11 @@ void Physics::solveSpherePlaneCollision(GlowingOrb& orb, Plane& plane)
         //resolving vel
         float velocityAlongNormal = glm::dot(orb.velocity, normal);
 
-        if (velocityAlongNormal < 0.0f) 
+        if (velocityAlongNormal < 0.0f)
         {
             float impactVelocity = glm::abs(velocityAlongNormal);
 
-            
-            const float restThreshold = 0.1f; 
+            const float restThreshold = 0.1f;
 
             if (impactVelocity < restThreshold)
             {
@@ -111,8 +103,8 @@ void Physics::solveSpherePlaneCollision(GlowingOrb& orb, Plane& plane)
                 glm::vec3 bounceVelocity = -normalVelocity * bounceFactor;
                 orb.velocity = orb.velocity - normalVelocity + bounceVelocity;
 
-                // Handle Bounce Mechanics (Energy)
-                float energyGain = impactVelocity * 0.1f; // Tweak this
+                
+                float energyGain = impactVelocity * 0.1f; 
                 orb.energy += energyGain;
                 orb.energy = glm::min(orb.energy, 1.0f);
             }
@@ -122,16 +114,14 @@ void Physics::solveSpherePlaneCollision(GlowingOrb& orb, Plane& plane)
 
 void Physics::solveCubePlaneCollision(Cube& cube, Plane& plane) {
 
-
     //collider data
     glm::vec3 halfExtents = cube.collider.baseHalfExtents * cube.scale;
     glm::vec3 normal = plane.collider.normal;
 
-
     float planeDist = glm::dot(plane.position, normal);
     float cubeCenterDist = glm::dot(cube.position, normal);
 
-    //calculate cube's proj(no idea what dat means)
+    //calculate cube's proj
     float radius = halfExtents.x * abs(normal.x) + halfExtents.y * abs(normal.y) + halfExtents.z * abs(normal.z);
 
     //height of bottom face of cube(dist bw it and plane)
@@ -150,6 +140,7 @@ void Physics::solveCubePlaneCollision(Cube& cube, Plane& plane) {
 
         if (velocityAlongNormal < 0.0f) //object moving into the plane, like in the plane facing dir ig
         {
+            
             float bounceFactor = 0.6f;
 
             //apply bounce

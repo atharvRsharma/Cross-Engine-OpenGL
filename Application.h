@@ -22,6 +22,8 @@ public:
     void run();
 
 private:
+
+    bool shouldSpawnCube = false;
     
     const char* BASIC_VERT_PATH = "basic.vert";
     const char* BASIC_FRAG_PATH = "basic.frag";

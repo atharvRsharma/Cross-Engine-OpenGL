@@ -3,7 +3,6 @@
 #include "Components.h"
 #include <string>
 
-// Handles saving and loading the entity state to/from JSON
 class Serializer
 {
 public:

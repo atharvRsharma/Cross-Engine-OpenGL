@@ -16,12 +16,14 @@ Application::Application()
 
     m_orb = m_serializer.loadState(JSON_PATH);
 
-    m_orb.init();    
     m_plane.init();
-    m_cube.init();
+    
+    
 
-    m_cube.scale = glm::vec3(0.2f);
+    
     m_renderer = std::make_unique<Renderer>();
+
+    m_physics.setGravity(m_orb.isGravityOn);
 
     m_orbMesh = std::make_unique<Mesh>(ORB_MODEL_PATH);
     m_orbShader = std::make_unique<Shader>(ORB_VERT_PATH, ORB_FRAG_PATH);
@@ -29,8 +31,16 @@ Application::Application()
     m_planeMesh = std::make_unique<Mesh>(PLANE_MODEL_PATH);
     m_planeShader = std::make_unique<Shader>(BASIC_VERT_PATH, BASIC_FRAG_PATH);
 
-    m_cubeMesh = std::make_unique<Mesh>(CUBE_MODEL_PATH);
-    m_cubeShader = std::make_unique<Shader>(BASIC_VERT_PATH, BASIC_FRAG_PATH);
+
+    if (shouldSpawnCube)
+    {
+        m_cube.init();
+        m_cube.scale = glm::vec3(0.2f);
+        m_cubeMesh = std::make_unique<Mesh>(CUBE_MODEL_PATH);
+        m_cubeShader = std::make_unique<Shader>(BASIC_VERT_PATH, BASIC_FRAG_PATH);
+    }
+
+    
 }
 
 void Application::run()
@@ -52,6 +62,7 @@ void Application::run()
             glfwSetWindowShouldClose(m_window->getNativeWindow(), true);
         }
         if (inputState.saveState) {
+            m_orb.isGravityOn = m_physics.getGravityState();
             m_serializer.saveState(m_orb, JSON_PATH);
         }
         if (inputState.resetPosition) {
@@ -60,7 +71,7 @@ void Application::run()
             m_orb.velocity = defaultOrb.velocity;
         }
 
-        m_physics.update(m_orb, m_plane, &m_cube, inputState, deltaTime);
+        m_physics.update(m_orb, m_plane, (shouldSpawnCube ? &m_cube : nullptr), inputState, deltaTime);
 
         int width, height;
         m_window->getSize(width, height);
@@ -77,16 +88,17 @@ void Application::run()
             }
         );
 
-        glm::mat4 cubeModel = glm::translate(glm::mat4(1.0f), m_cube.position);
-        cubeModel = glm::scale(cubeModel, m_cube.scale);
 
-        m_renderer->draw(m_cubeMesh.get(), m_cubeShader.get(), cubeModel,
-            [&](Shader& shader) {
-                shader.setVec3("objectColor", m_cube.color);
-            }
-        );
+        if (shouldSpawnCube) {
+            glm::mat4 cubeModel = glm::translate(glm::mat4(1.0f), m_cube.position);
+            cubeModel = glm::scale(cubeModel, m_cube.scale);
 
-
+            m_renderer->draw(m_cubeMesh.get(), m_cubeShader.get(), cubeModel,
+                [&](Shader& shader) {
+                    shader.setVec3("objectColor", m_cube.color);
+                }
+            );
+        }
 
 
 
@@ -98,11 +110,17 @@ void Application::run()
             }
         );
 
+
+
+
         m_renderer->endFrame();
 
         m_window->swapBuffers();
         m_window->pollEvents();
     }
+
+    m_orb.isGravityOn = m_physics.getGravityState();
+
 
     m_serializer.saveState(m_orb, JSON_PATH); //save struct data to json
 }

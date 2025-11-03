@@ -11,7 +11,7 @@ public:
     Window(int width, int height, const std::string& title);
     ~Window();
 
-    // No copying or assigning
+    //singleton thing(no copy or assigning, only one instance)
     Window(const Window&) = delete;
     Window& operator=(const Window&) = delete;
 
