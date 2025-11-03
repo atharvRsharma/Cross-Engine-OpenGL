@@ -40,6 +40,11 @@ struct GlowingOrb {
     glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);
     float energy = 0.5f;
     std::string state = "active";
+
+    float mass = 1.0f;           
+    float inverseMass = 1.0f / mass; 
+    glm::vec3 forceAccumulator{ 0.0f };
+
     Collider collider;
     EquilibriumState eq_state = EquilibriumState::AWAKE;
     
@@ -54,7 +59,7 @@ struct GlowingOrb {
     }
 };
 
-struct Plane {
+struct Plane  {
     glm::vec3 position = glm::vec3(0.0f);
     glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
     Collider collider;
@@ -67,19 +72,19 @@ struct Plane {
 };
 
 struct Cube {
-    glm::vec3 position = glm::vec3(2.0f);
+    glm::vec3 position = glm::vec3(5.0f);
     glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f);
     glm::vec3 scale = glm::vec3(1.0f);
 
 
-    glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f); 
+    /*glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f); 
     glm::vec3 angularVelocity = glm::vec3(0.0f);
-    glm::vec3 torque = glm::vec3(0.0f);
+    glm::vec3 torque = glm::vec3(0.0f);*/
 
-    float mass = 1.0f;
+    float mass = 10.0f;
     float inverseMass = 1.0f/mass; 
-    glm::mat3 inverseInertiaTensor;
+    glm::vec3 forceAccumulator = glm::vec3(0.0f);
 
     float sleepTimer = 0.0f;
 

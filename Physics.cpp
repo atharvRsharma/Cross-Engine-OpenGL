@@ -1,10 +1,9 @@
 #include "Physics.h"
 #include <glm/glm.hpp>
-#include <algorithm> // For std::min/max
+#include <algorithm> 
 
 
 
-// The Main "Physics Loop"
 void Physics::update(GlowingOrb& orb, Plane& plane, Cube* cube, const InputState& input, float deltaTime)
 {
     if (input.toggleGravity) {
@@ -20,40 +19,53 @@ void Physics::update(GlowingOrb& orb, Plane& plane, Cube* cube, const InputState
         orb.energy = glm::max(orb.energy, 0.0f);
     }
 
+    orb.forceAccumulator = glm::vec3(0.0f);
+    if (cube != nullptr) {
+        cube->forceAccumulator = glm::vec3(0.0f);
+    }
+
+
     if (m_gravityEnabled) {
         const float gravity = -9.8f;
 
         if (orb.eq_state == EquilibriumState::AWAKE) {
-            orb.velocity.y += gravity * deltaTime;
+            glm::vec3 orbGravityForce = glm::vec3(0.0f, gravity * orb.mass, 0.0f);
+            orb.forceAccumulator += orbGravityForce;
         }
+        if (cube != nullptr && cube->state == EquilibriumState::AWAKE) {
+            glm::vec3 cubeGravityForce = glm::vec3(0.0f, gravity * cube->mass, 0.0f);
+            cube->forceAccumulator += cubeGravityForce;
+        }
+    }
         
        
-    }
+    
 
     if (orb.eq_state == EquilibriumState::AWAKE) {
+        // a = F * (1/m)
+        glm::vec3 acceleration = orb.forceAccumulator * orb.inverseMass;
+        // v_new = v_old + a * dt
+        orb.velocity += acceleration * deltaTime;
+        // p_new = p_old + v * dt
         orb.position += orb.velocity * deltaTime;
+    }
+    if (cube != nullptr && cube->state == EquilibriumState::AWAKE) {
+        // a = F * (1/m)
+        glm::vec3 acceleration = cube->forceAccumulator * cube->inverseMass;
+        // v_new = v_old + a * dt
+        cube->velocity += acceleration * deltaTime;
+        // p_new = p_old + v * dt
+        cube->position += cube->velocity * deltaTime;
     }
     
 
 
     solveSpherePlaneCollision(orb, plane);
-    
-
-    if (cube != nullptr) 
-    {
-        if (m_gravityEnabled) {
-            if (cube->state == EquilibriumState::AWAKE) {
-                cube->velocity.y += -9.8f * deltaTime;
-            }
-        }
-
-        if (cube->state == EquilibriumState::AWAKE) {
-            cube->position += cube->velocity * deltaTime;
-        }
-
-        
-        solveCubePlaneCollision(*cube, plane); 
+    if (cube != nullptr) {
+        solveCubePlaneCollision(*cube, plane);
     }
+
+    
 
 
 }
@@ -133,17 +145,14 @@ void Physics::solveCubePlaneCollision(Cube& cube, Plane& plane) {
         float penetrationDepth = planeDist - cubeBottomDist;
         cube.position += normal * penetrationDepth;
 
-        // 7. Resolve Velocity (Bounce)
-        // *** THIS IS THE FIX ***
-        // The velocity logic is now INSIDE the collision check
-
+        //vel resolution
         float velocityAlongNormal = glm::dot(cube.velocity, normal);
 
-        if (velocityAlongNormal < 0.0f) // Only if moving *into* the plane
+        if (velocityAlongNormal < 0.0f) //object moving into the plane, like in the plane facing dir ig
         {
             float bounceFactor = 0.6f;
 
-            // Calculate and apply the bounce
+            //apply bounce
             glm::vec3 normalVelocity = normal * velocityAlongNormal;
             glm::vec3 bounceVelocity = -normalVelocity * bounceFactor;
             cube.velocity = cube.velocity - normalVelocity + bounceVelocity;

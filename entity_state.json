@@ -1,9 +1,9 @@
 {
-    "energy": 0.6043745279312134,
+    "energy": 0.0,
     "id": "entity_01",
     "position": [
         0.0,
-        1.0,
+        11.0,
         0.0
     ],
     "state": "active",
