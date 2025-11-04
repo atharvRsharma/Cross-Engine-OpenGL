@@ -7,15 +7,11 @@
 class Shader
 {
 public:
-    // The program ID
     unsigned int ID = 0;
 
-    // Constructor: Reads and builds the shader
     Shader(const char* vertexPath, const char* fragmentPath);
-    // Destructor
     ~Shader();
 
-    // Activates the shader
     void use() const;
 
     // Utility uniform functions
@@ -26,6 +22,5 @@ public:
     void setMat4(const std::string& name, const glm::mat4& mat) const;
 
 private:
-    // Checks for compile or link errors
     void checkCompileErrors(unsigned int shader, std::string type);
 };

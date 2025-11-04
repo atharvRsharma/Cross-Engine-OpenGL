@@ -15,7 +15,7 @@ InputManager::InputManager(GLFWwindow* window, Camera& camera)
 void InputManager::process(float deltaTime)
 {
 
-    m_state.shouldInteract = (glfwGetKey(m_window, GLFW_KEY_E) == GLFW_PRESS);
+    m_state.shouldInteract = (glfwGetKey(m_window, GLFW_KEY_F) == GLFW_PRESS);
 
 
     int escKeyState = glfwGetKey(m_window, GLFW_KEY_ESCAPE);

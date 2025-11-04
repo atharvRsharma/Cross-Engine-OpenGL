@@ -1,16 +1,15 @@
 #pragma once
 
 #include <glad/glad.h>
-#include "FileParser.h" // For parseObj
+#include "FileParser.h" 
 #include <string>
 #include <vector>
-#include <cstddef> // For offsetof
-#include <iostream> // For cerr
+#include <cstddef>
+#include <iostream> 
 
 class Mesh
 {
 public:
-    // Constructor: Loads the model
     Mesh(const std::string& modelPath)
     {
         std::vector<Primitives::Vertex> vertices;
@@ -36,13 +35,13 @@ public:
             vertices.data(),
             GL_STATIC_DRAW);
 
-        // Position
+        //pos
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Primitives::Vertex), (void*)offsetof(Primitives::Vertex, position));
         glEnableVertexAttribArray(0);
-        // TexCoord
+        //tex cooridnates
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Primitives::Vertex), (void*)offsetof(Primitives::Vertex, texCoord));
         glEnableVertexAttribArray(1);
-        // Normal
+        //normals
         glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Primitives::Vertex), (void*)offsetof(Primitives::Vertex, normal));
         glEnableVertexAttribArray(2);
 
@@ -50,24 +49,20 @@ public:
         glBindVertexArray(0);
     }
 
-    // Destructor: Cleans up the GL objects
     ~Mesh()
     {
         glDeleteVertexArrays(1, &m_vao);
         glDeleteBuffers(1, &m_vbo);
     }
 
-    // Binds the VAO for drawing
     void bind() const {
         glBindVertexArray(m_vao);
     }
 
-    // Unbinds the VAO
     void unbind() const {
         glBindVertexArray(0);
     }
 
-    // Gets the number of vertices to draw
     unsigned int getVertexCount() const {
         return m_vertexCount;
     }
