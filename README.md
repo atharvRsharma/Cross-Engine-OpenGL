@@ -1,4 +1,4 @@
-Cross-Realm Entity Bridge
+# Cross-Realm Entity Bridge
 
 This project is a 10-day technical challenge demonstrating an entity (a glowing orb) that exists and persists across two separate applications: a low-level OpenGL C++ simulation and a high-level Unreal Engine 4 game.
 
@@ -18,72 +18,34 @@ Controls
 
 OpenGL (ogl_port.exe)
 
-Key
+WASD: Move Camera
 
-Action
+Space / L-Shift: Move Camera Up / Down
 
-WASD
+Mouse: Look Camera
 
-Move Camera
+E (Hold): Interact (Gain Energy)
 
-Space / L-Shift
+G: Toggle Gravity
 
-Move Camera Up / Down
+R: Reset Orb Position
 
-Mouse
+S: Save Current State to JSON
 
-Look Camera
-
-E (Hold)
-
-Interact (Gain Energy)
-
-G
-
-Toggle Gravity
-
-R
-
-Reset Orb Position
-
-S
-
-Save Current State to JSON
-
-Esc
-
-Exit Application
+Esc: Exit Application
 
 Unreal Engine 4 (cross_realm_ue4.exe)
 
-Key
+WASD: Move Camera
 
-Action
+Mouse: Look Camera
 
-WASD
+F (Hold): Interact (Gain Energy)
 
-Move Camera
+G: Toggle Gravity
 
-Mouse
+R: Reset Orb Position
 
-Look Camera
+L: Load/Reload State from JSON
 
-F (Hold)
-
-Interact (Gain Energy)
-
-G
-
-Toggle Gravity
-
-R
-
-Reset Orb Position
-
-L
-
-Load/Reload State from JSON
-
-Shift + F1
-
-Show / Hide Mouse Cursor
+Shift + F1: Show / Hide Mouse Cursor
