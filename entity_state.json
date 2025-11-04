@@ -1,16 +1,16 @@
 {
-    "energy": 0.9664683938026428,
+    "energy": 0.0,
     "id": "entity_01",
     "isGravityOn": true,
     "position": [
         0.0,
-        0.2862951159477234,
+        0.0,
         0.0
     ],
     "state": "active",
     "velocity": [
         0.0,
-        -0.7867733240127563,
+        0.0,
         0.0
     ]
 }
